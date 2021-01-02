@@ -1,11 +1,12 @@
 using API.Data;
+using API.Interfaces;
+using API.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.OpenApi.Models;
 
 namespace API
 {
@@ -24,6 +25,9 @@ namespace API
             {
                 options.UseSqlite(_config.GetConnectionString("DefaultConnection")) ;
             });
+            
+            services.AddScoped<ITokenService, TokenService>();
+
             services.AddControllers();
             services.AddCors();
         }
@@ -37,16 +41,13 @@ namespace API
             }
 
             app.UseHttpsRedirection();
-
             app.UseRouting();
-
             app.UseCors(policy => 
                   policy.AllowAnyHeader()
                         .AllowAnyMethod()
                         .WithOrigins("https://localhost:4200"));
 
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
